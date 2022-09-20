@@ -28,9 +28,35 @@ extension URLSession: URLSessionProtocol {
     }
 
     public func data(for request: URLRequest) async throws -> (Data, URLResponse) {
-        try await data(for: request, delegate: nil)
+        try await asyncData(for: request)
     }
 }
+
+protocol AsyncURLSession {
+
+    /// Our async/await enabled URL fetcher,
+    /// returns an async error or a [ data, response ] tuple.
+    func asyncData(for request: URLRequest) async throws -> (Data, URLResponse)
+}
+
+/// Here we implement our async aware function.
+extension URLSession: AsyncURLSession {
+
+    public func asyncData(for request: URLRequest) async throws -> (Data, URLResponse) {
+        return try await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<(Data, URLResponse), Error>) in
+            dataTask(with: request) { data, response, error in
+                guard let data = data, let response = response else {
+                    if let error = error {
+                        continuation.resume(throwing: error )
+                    }
+                    return
+                }
+                continuation.resume(returning: (data, response))
+            }.resume()
+        })
+    }
+}
+
 
 extension URLSessionDataTask: URLSessionDataTaskProtocol {}
 
