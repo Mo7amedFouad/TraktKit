@@ -73,7 +73,9 @@ public struct SyncId: Codable, Hashable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         var nested = container.nestedContainer(keyedBy: IDCodingKeys.self, forKey: .ids)
-        try nested.encode(trakt, forKey: .trakt)
+        if trakt != 0 {
+            try nested.encode(trakt, forKey: .trakt)
+        }
         try nested.encodeIfPresent(tmdb, forKey: .tmdb)
 
     }
@@ -81,17 +83,16 @@ public struct SyncId: Codable, Hashable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         let nested = try container.nestedContainer(keyedBy: IDCodingKeys.self, forKey: .ids)
-        self.trakt = try nested.decode(Int.self, forKey: .trakt)
+        self.trakt = try nested.decodeIfPresent(Int.self, forKey: .trakt) ?? 0
         self.tmdb = try nested.decodeIfPresent(Int.self, forKey: .tmdb)
 
     }
 
-    public init(trakt: Int, tmdb: Int? = nil) {
+    public init(trakt: Int = 0, tmdb: Int? = nil) {
         self.trakt = trakt
         self.tmdb = tmdb
     }
 }
-
 public struct AddToHistoryId: Encodable, Hashable {
     /// Trakt id of the movie / show / season / episode
     public let trakt: Int
