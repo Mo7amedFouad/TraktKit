@@ -40,8 +40,8 @@ public class TraktManager {
     }()
     
     // Keys
-    let accessTokenKey = "accessToken"
-    let refreshTokenKey = "refreshToken"
+    let accessTokenKey = "trakt_accessToken"
+    let refreshTokenKey = "trakt_refreshToken"
     
     let session: URLSessionProtocol
  
@@ -63,11 +63,9 @@ public class TraktManager {
             if _accessToken != nil {
                 return _accessToken
             }
-            if let accessTokenData = MLKeychain.loadData(forKey: accessTokenKey) {
-                if let accessTokenString = String(data: accessTokenData, encoding: .utf8) {
-                    _accessToken = accessTokenString
-                    return accessTokenString
-                }
+            if let accessTokenString = UserDefaults.standard.string(forKey: accessTokenKey) {
+                _accessToken = accessTokenString
+                return accessTokenString
             }
             
             return nil
@@ -77,13 +75,10 @@ public class TraktManager {
             _accessToken = newValue
             if newValue == nil {
                 // Remove from keychain
-                MLKeychain.deleteItem(forKey: accessTokenKey)
+                UserDefaults.standard.removeObject(forKey: accessTokenKey)
             } else {
                 // Save to keychain
-                let succeeded = MLKeychain.setString(value: newValue!, forKey: accessTokenKey)
-                #if DEBUG
-                    print("Saved access token: \(succeeded)")
-                #endif
+                UserDefaults.standard.setValue(newValue!, forKey: accessTokenKey)
             }
         }
     }
@@ -94,11 +89,9 @@ public class TraktManager {
             if _refreshToken != nil {
                 return _refreshToken
             }
-            if let refreshTokenData = MLKeychain.loadData(forKey: refreshTokenKey) {
-                if let refreshTokenString = String.init(data: refreshTokenData, encoding: .utf8) {
-                    _refreshToken = refreshTokenString
-                    return refreshTokenString
-                }
+            if let refreshTokenString = UserDefaults.standard.string(forKey: refreshTokenKey) {
+                _refreshToken = refreshTokenString
+                return refreshTokenString
             }
             
             return nil
@@ -108,13 +101,10 @@ public class TraktManager {
             _refreshToken = newValue
             if newValue == nil {
                 // Remove from keychain
-                MLKeychain.deleteItem(forKey: refreshTokenKey)
+                UserDefaults.standard.removeObject(forKey: refreshTokenKey)
             } else {
                 // Save to keychain
-                let succeeded = MLKeychain.setString(value: newValue!, forKey: refreshTokenKey)
-                #if DEBUG
-                    print("Saved refresh token: \(succeeded)")
-                #endif
+                UserDefaults.standard.setValue(newValue!, forKey: refreshTokenKey)
             }
         }
     }
