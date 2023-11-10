@@ -276,7 +276,7 @@ extension TraktManager {
      - parameter completion: completion handler
      */
     @discardableResult
-    public func removeFromHistory(movies: [SyncId]? = nil, shows: [SyncId]? = nil, seasons: [SyncId]? = nil, episodes: [SyncId]? = nil, historyIDs: [Int]? = nil, completion: @escaping ObjectCompletionHandler<RemoveFromHistoryResult>) throws -> URLSessionDataTaskProtocol? {
+    public func removeFromHistory(movies: [TMDBSyncId]? = nil, shows: [TMDBSyncId]? = nil, seasons: [TMDBSyncId]? = nil, episodes: [TMDBSyncId]? = nil, historyIDs: [Int]? = nil, completion: @escaping ObjectCompletionHandler<RemoveFromHistoryResult>) throws -> URLSessionDataTaskProtocol? {
         let body = TraktMediaBody(movies: movies, shows: shows, seasons: seasons, episodes: episodes, ids: historyIDs)
         guard let request = post("sync/history/remove", body: body) else { return nil }
         return performRequest(request: request, completion: completion)

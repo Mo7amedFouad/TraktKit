@@ -56,6 +56,32 @@ class TraktCommentBody: TraktSingleObjectBody<SyncId> {
 }
 
 /// ID used to sync with Trakt.
+public struct TMDBSyncId: Codable, Hashable {
+    /// Trakt id of the movie / show / season / episode
+    public let tmdb: Int
+
+    enum CodingKeys: String, CodingKey {
+        case tmdb
+    }
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(tmdb, forKey: .tmdb)
+
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.tmdb = try container.decode(Int.self, forKey: .tmdb)
+
+    }
+
+    public init(tmdb: Int) {
+        self.tmdb = tmdb
+    }
+}
+
+
+/// ID used to sync with Trakt.
 public struct SyncId: Codable, Hashable {
     /// Trakt id of the movie / show / season / episode
     public let trakt: Int
@@ -95,7 +121,7 @@ public struct SyncId: Codable, Hashable {
 }
 public struct AddToHistoryId: Encodable, Hashable {
     /// Trakt id of the movie / show / season / episode
-    public let id: SyncId
+    public let id: TMDBSyncId
     /// UTC datetime when the item was watched.
     public let watchedAt: Date?
     
@@ -107,9 +133,10 @@ public struct AddToHistoryId: Encodable, Hashable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encodeIfPresent(id, forKey: .ids)
-        try container.encodeIfPresent(watchedAt, forKey: .watchedAt)    }
+        try container.encodeIfPresent(watchedAt, forKey: .watchedAt)
+    }
     
-    public init(id: SyncId, watchedAt: Date?) {
+    public init(id: TMDBSyncId, watchedAt: Date?) {
         self.id = id
         self.watchedAt = watchedAt
     }
