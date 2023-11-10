@@ -119,6 +119,79 @@ public struct SyncId: Codable, Hashable {
         self.tmdb = tmdb
     }
 }
+// MARK: - HistoryShow
+class AddToHistoryShows: TraktSingleObjectBody<[AddToHistoryShow]> {
+
+    init(shows: [AddToHistoryShow]) {
+        super.init(movie: nil, show: shows, season: nil, episode: nil, list: nil)
+    }
+
+
+}
+public struct AddToHistoryShow: Encodable {
+  
+    public let ids: AddToHistoryIDS
+    public let seasons: [AddToHistorySeason]
+
+    enum CodingKeys: String, CodingKey {
+        case ids = "ids"
+        case seasons
+    }
+    
+    public init(ids: AddToHistoryIDS, seasons: [AddToHistorySeason]) {
+        self.ids = ids
+        self.seasons = seasons
+    }
+    
+}
+
+// MARK: - IDS
+public struct AddToHistoryIDS: Encodable {
+   
+    public let tmdb: Int
+
+    enum CodingKeys: String, CodingKey {
+        case tmdb
+    }
+    public init(tmdb: Int) {
+        self.tmdb = tmdb
+    }
+    
+}
+
+// MARK: - Season
+public struct AddToHistorySeason: Encodable {
+    
+    public let number: Int
+    public let episodes: [AddToHistoryEpisode]
+
+    enum CodingKeys: String, CodingKey {
+        case number
+        case episodes
+    }
+    public init(number: Int, episodes: [AddToHistoryEpisode]) {
+        self.number = number
+        self.episodes = episodes
+    }
+    
+}
+
+// MARK: - Episode
+public struct AddToHistoryEpisode: Codable {
+    public init(watchedAt: Date? = nil, number: Int) {
+        self.watchedAt = watchedAt
+        self.number = number
+    }
+    
+    let watchedAt: Date?
+    let number: Int
+
+    enum CodingKeys: String, CodingKey {
+        case watchedAt
+        case number
+    }
+}
+
 public struct AddToHistoryId: Encodable, Hashable {
     /// Trakt id of the movie / show / season / episode
     public let id: TMDBSyncId
