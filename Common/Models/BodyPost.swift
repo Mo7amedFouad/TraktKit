@@ -95,7 +95,7 @@ public struct SyncId: Codable, Hashable {
 }
 public struct AddToHistoryId: Encodable, Hashable {
     /// Trakt id of the movie / show / season / episode
-    public let trakt: Int
+    public let id: SyncId
     /// UTC datetime when the item was watched.
     public let watchedAt: Date?
     
@@ -103,19 +103,14 @@ public struct AddToHistoryId: Encodable, Hashable {
         case ids, watchedAt = "watched_at"
     }
     
-    enum IDCodingKeys: String, CodingKey {
-        case trakt
-    }
     
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        var nested = container.nestedContainer(keyedBy: IDCodingKeys.self, forKey: .ids)
-        try nested.encode(trakt, forKey: .trakt)
-        try container.encodeIfPresent(watchedAt, forKey: .watchedAt)
-    }
+        try container.encodeIfPresent(id, forKey: .ids)
+        try container.encodeIfPresent(watchedAt, forKey: .watchedAt)    }
     
-    public init(trakt: Int, watchedAt: Date?) {
-        self.trakt = trakt
+    public init(id: SyncId, watchedAt: Date?) {
+        self.id = id
         self.watchedAt = watchedAt
     }
 }
