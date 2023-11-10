@@ -262,11 +262,18 @@ extension TraktManager {
     
     
     @discardableResult
-    public func addShowToHistory(shows: [AddToHistoryShow], completion: @escaping ObjectCompletionHandler<AddToHistoryResult>) throws -> URLSessionDataTaskProtocol? {
-        let body = AddToHistoryShows(shows: shows)
+    public func addShowsToHistory(shows: [AddToHistoryShow], completion: @escaping ObjectCompletionHandler<AddToHistoryResult>) throws -> URLSessionDataTaskProtocol? {
+        let body = TraktMediaBody(shows: shows)
         guard let request = post("sync/history", body: body) else { return nil }
         return performRequest(request: request, completion: completion)
     }
+    @discardableResult
+    public func removeShowsFromHistory(shows: [AddToHistoryShow], completion: @escaping ObjectCompletionHandler<AddToHistoryResult>) throws -> URLSessionDataTaskProtocol? {
+        let body = TraktMediaBody(shows: shows)
+        guard let request = post("sync/history/remove", body: body) else { return nil }
+        return performRequest(request: request, completion: completion)
+    }
+
 
     /**
      Remove items from a user's watch history including all watches, scrobbles, and checkins. Accepts shows, seasons, episodes and movies. If only a show is passed, all episodes for the show will be removed. If seasons are specified, only episodes in those seasons will be removed.

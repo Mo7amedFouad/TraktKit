@@ -120,14 +120,6 @@ public struct SyncId: Codable, Hashable {
     }
 }
 // MARK: - HistoryShow
-class AddToHistoryShows: TraktSingleObjectBody<[AddToHistoryShow]> {
-
-    init(shows: [AddToHistoryShow]) {
-        super.init(movie: nil, show: shows, season: nil, episode: nil, list: nil)
-    }
-
-
-}
 public struct AddToHistoryShow: Encodable {
   
     public let ids: AddToHistoryIDS
