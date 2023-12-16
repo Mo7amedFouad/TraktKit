@@ -24,9 +24,9 @@ extension TraktManager {
     @discardableResult
     public func lastActivities(completion: @escaping LastActivitiesCompletionHandler) -> URLSessionDataTaskProtocol? {
         guard let request = mutableRequest(forPath: "sync/last_activities",
-                                         withQuery: [:],
-                                         isAuthorized: true,
-                                         withHTTPMethod: .GET) else { return nil }
+                                           withQuery: [:],
+                                           isAuthorized: true,
+                                           withHTTPMethod: .GET) else { return nil }
         return performRequest(request: request, completion: completion)
     }
     
@@ -48,9 +48,9 @@ extension TraktManager {
     @discardableResult
     public func getPlaybackProgress(type: WatchedType, completion: @escaping ObjectsCompletionHandler<PlaybackProgress>) -> URLSessionDataTaskProtocol? {
         guard let request = mutableRequest(forPath: "sync/playback/\(type)",
-                                         withQuery: [:],
-                                         isAuthorized: true,
-                                         withHTTPMethod: .GET) else { return nil }
+                                           withQuery: [:],
+                                           isAuthorized: true,
+                                           withHTTPMethod: .GET) else { return nil }
         return performRequest(request: request, completion: completion)
     }
     
@@ -64,9 +64,9 @@ extension TraktManager {
     @discardableResult
     public func removePlaybackItem<T: CustomStringConvertible>(id: T, completion: @escaping SuccessCompletionHandler) -> URLSessionDataTaskProtocol? {
         guard let request = mutableRequest(forPath: "sync/playback/\(id)",
-                                         withQuery: [:],
-                                         isAuthorized: true,
-                                         withHTTPMethod: .DELETE) else { return nil }
+                                           withQuery: [:],
+                                           isAuthorized: true,
+                                           withHTTPMethod: .DELETE) else { return nil }
         return performRequest(request: request, completion: completion)
     }
     
@@ -89,9 +89,9 @@ extension TraktManager {
     @discardableResult
     public func getCollection(type: WatchedType, extended: [ExtendedType] = [.Min], completion: @escaping CollectionCompletionHandler) -> URLSessionDataTaskProtocol? {
         guard let request = mutableRequest(forPath: "sync/collection/\(type)",
-                                         withQuery: ["extended": extended.queryString()],
-                                         isAuthorized: true,
-                                         withHTTPMethod: .GET) else { return nil }
+                                           withQuery: ["extended": extended.queryString()],
+                                           isAuthorized: true,
+                                           withHTTPMethod: .GET) else { return nil }
         return performRequest(request: request, completion: completion)
     }
     
@@ -273,8 +273,8 @@ extension TraktManager {
         guard let request = post("sync/history/remove", body: body) else { return nil }
         return performRequest(request: request, completion: completion)
     }
-
-
+    
+    
     /**
      Remove items from a user's watch history including all watches, scrobbles, and checkins. Accepts shows, seasons, episodes and movies. If only a show is passed, all episodes for the show will be removed. If seasons are specified, only episodes in those seasons will be removed.
      
@@ -362,32 +362,32 @@ extension TraktManager {
     
     /**
      Returns all items in a user's watchlist filtered by type.
-
+     
      All list items are sorted by ascending `rank`. We also send `X-Sort-By` and `X-Sort-How` headers which can be used to custom sort the watchlist in your app based on the user's preference. Values for X-Sort-By include `rank`, `added`, `title`, `released`, `runtime`, `popularity`, `percentage`, and `votes`. Values for `X-Sort-How` include `asc` and `desc`.
-
+     
      **AUTO REMOVAL**
      When an item is watched, it will be automatically removed from the watchlist. For shows and seasons, watching 1 episode will remove the entire show or season. **The watchlist should not be used as a list of what the user is actively watching.** Use a combination of the **\/sync/watched** and **\/shows/:id/progress** methods to get what the user is actively watching.
-
+     
      🔒 OAuth Required
      📄 Pagination Optional
      ✨ Extended Info
      */
     @discardableResult
     public func getWatchlist(watchType: WatchedType, pagination: Pagination? = nil, extended: [ExtendedType] = [.Min], completion: @escaping WatchlistCompletionHandler) -> URLSessionDataTaskProtocol? {
-
+        
         var query: [String: String] = ["extended": extended.queryString()]
-
+        
         // pagination
         if let pagination = pagination {
             for (key, value) in pagination.value() {
                 query[key] = value
             }
         }
-
+        
         guard let request = mutableRequest(forPath: "sync/watchlist/\(watchType.rawValue)",
-                                         withQuery: query,
-                                         isAuthorized: true,
-                                         withHTTPMethod: .GET) else { return nil }
+                                           withQuery: query,
+                                           isAuthorized: true,
+                                           withHTTPMethod: .GET) else { return nil }
         return performRequest(request: request, completion: completion)
     }
     
@@ -428,4 +428,68 @@ extension TraktManager {
         guard let request = post("sync/watchlist/remove", body: body) else { completion(.error(error: nil)); return nil }
         return performRequest(request: request, completion: completion)
     }
+    
+    /**
+     Retrieves the user's favorites from the Trakt API.
+     
+     - Parameters:
+     - watchType: The type of watched items to retrieve. Defaults to `nil`.
+     - sort: The sorting option for the retrieved favorites. Defaults to `nil`.
+     - completion: The completion handler to be called when the request is complete.
+     
+     - Returns: An optional `URLSessionDataTaskProtocol` representing the network request.
+     */
+    @discardableResult
+    public func getFavorites(watchType: WatchedType? = nil, sort: String?, completion: @escaping WatchlistCompletionHandler) -> URLSessionDataTaskProtocol? {
+        guard let request = mutableRequest(forPath: "sync/favorites/\(watchType?.rawValue ?? "")/\(sort ?? "")",
+                                           withQuery: [:],
+                                           isAuthorized: true,
+                                           withHTTPMethod: .GET) else { return nil }
+        return performRequest(request: request, completion: completion)
+    }
+    
+    /**
+     Adds movies, shows, seasons, and episodes to the user's favorites on Trakt.
+     
+     - Parameters:
+     - movies: An optional array of SyncId objects representing the movies to add to favorites.
+     - shows: An optional array of SyncId objects representing the shows to add to favorites.
+     - seasons: An optional array of SyncId objects representing the seasons to add to favorites.
+     - episodes: An optional array of SyncId objects representing the episodes to add to favorites.
+     - completion: A closure that is called when the request is complete. It takes an ObjectCompletionHandler<WatchlistItemPostResult> as a parameter.
+     
+     - Returns: An optional URLSessionDataTaskProtocol object that can be used to cancel the request.
+     - Throws: An error if the request cannot be created.
+     
+     - Note: The completion closure will be called with an error if the request cannot be created.
+     */
+    @discardableResult
+    public func addToFavorites(movies: [SyncId]? = nil, shows: [SyncId]? = nil, seasons: [SyncId]? = nil, episodes: [SyncId]? = nil, completion: @escaping ObjectCompletionHandler<WatchlistItemPostResult>) throws -> URLSessionDataTaskProtocol? {
+        let body = TraktMediaBody(movies: movies, shows: shows, seasons: seasons, episodes: episodes)
+        guard let request = post("sync/favorites", body: body) else { completion(.error(error: nil)); return nil }
+        return performRequest(request: request, completion: completion)
+    }
+    
+    /**
+     Removes movies, shows, seasons, or episodes from the user's favorites on Trakt.
+     
+     - Parameters:
+     - movies: An optional array of SyncId objects representing the movies to remove from favorites.
+     - shows: An optional array of SyncId objects representing the shows to remove from favorites.
+     - seasons: An optional array of SyncId objects representing the seasons to remove from favorites.
+     - episodes: An optional array of SyncId objects representing the episodes to remove from favorites.
+     - completion: A closure that will be called when the request is complete. It takes an optional RemoveFromWatchlistResult object as a parameter.
+     
+     - Throws: An error if the request cannot be created.
+     
+     - Returns: An optional URLSessionDataTaskProtocol object that can be used to cancel the request.
+     */
+    @discardableResult
+    public func removeFromFavorites(movies: [SyncId]? = nil, shows: [SyncId]? = nil, seasons: [SyncId]? = nil, episodes: [SyncId]? = nil, completion: @escaping ObjectCompletionHandler<RemoveFromWatchlistResult>) throws -> URLSessionDataTaskProtocol? {
+        let body = TraktMediaBody(movies: movies, shows: shows, seasons: seasons, episodes: episodes)
+        guard let request = post("sync/favorites/remove", body: body) else { completion(.error(error: nil)); return nil }
+        return performRequest(request: request, completion: completion)
+    }
+    
+    
 }
