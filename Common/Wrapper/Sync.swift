@@ -464,7 +464,7 @@ extension TraktManager {
      - Note: The completion closure will be called with an error if the request cannot be created.
      */
     @discardableResult
-    public func addToFavorites(movies: [SyncId]? = nil, shows: [SyncId]? = nil, seasons: [SyncId]? = nil, episodes: [SyncId]? = nil, completion: @escaping ObjectCompletionHandler<WatchlistItemPostResult>) throws -> URLSessionDataTaskProtocol? {
+    public func addToFavorites(movies: [SyncId]? = nil, shows: [SyncId]? = nil, seasons: [SyncId]? = nil, episodes: [SyncId]? = nil, completion: @escaping ObjectCompletionHandler<FavoritesItemPostResult>) throws -> URLSessionDataTaskProtocol? {
         let body = TraktMediaBody(movies: movies, shows: shows, seasons: seasons, episodes: episodes)
         guard let request = post("sync/favorites", body: body) else { completion(.error(error: nil)); return nil }
         return performRequest(request: request, completion: completion)
@@ -485,7 +485,7 @@ extension TraktManager {
      - Returns: An optional URLSessionDataTaskProtocol object that can be used to cancel the request.
      */
     @discardableResult
-    public func removeFromFavorites(movies: [SyncId]? = nil, shows: [SyncId]? = nil, seasons: [SyncId]? = nil, episodes: [SyncId]? = nil, completion: @escaping ObjectCompletionHandler<RemoveFromWatchlistResult>) throws -> URLSessionDataTaskProtocol? {
+    public func removeFromFavorites(movies: [SyncId]? = nil, shows: [SyncId]? = nil, seasons: [SyncId]? = nil, episodes: [SyncId]? = nil, completion: @escaping ObjectCompletionHandler<RemoveFavoritesItemResult>) throws -> URLSessionDataTaskProtocol? {
         let body = TraktMediaBody(movies: movies, shows: shows, seasons: seasons, episodes: episodes)
         guard let request = post("sync/favorites/remove", body: body) else { completion(.error(error: nil)); return nil }
         return performRequest(request: request, completion: completion)

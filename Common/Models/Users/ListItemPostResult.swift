@@ -62,3 +62,27 @@ public struct WatchlistItemPostResult: Codable, Hashable {
     }
 }
 
+
+public struct FavoritesItemPostResult: Codable, Hashable {
+    public let added: ObjectCount
+    public let existing: ObjectCount
+    public let notFound: NotFound
+    
+    public struct ObjectCount: Codable, Hashable {
+        public let movies: Int
+        public let shows: Int
+    }
+    
+    public struct NotFound: Codable, Hashable {
+        public let movies: [NotFoundIds]
+        public let shows: [NotFoundIds]
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case added
+        case existing
+        case notFound = "not_found"
+    }
+}
+
+
