@@ -440,8 +440,8 @@ extension TraktManager {
      - Returns: An optional `URLSessionDataTaskProtocol` representing the network request.
      */
     @discardableResult
-    public func getFavorites(watchType: WatchedType? = nil, sort: String?, completion: @escaping WatchlistCompletionHandler) -> URLSessionDataTaskProtocol? {
-        guard let request = mutableRequest(forPath: "sync/favorites/\(watchType?.rawValue ?? "")/\(sort ?? "")",
+    public func getFavorites(watchType: WatchedType? = nil, sort: String?, sort_how: String?, completion: @escaping WatchlistCompletionHandler) -> URLSessionDataTaskProtocol? {
+        guard let request = mutableRequest(forPath: "sync/favorites/\(watchType?.rawValue ?? "")/\(sort ?? "")/\(sort_how ?? "") ",
                                            withQuery: [:],
                                            isAuthorized: true,
                                            withHTTPMethod: .GET) else { return nil }
