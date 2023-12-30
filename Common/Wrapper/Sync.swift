@@ -372,8 +372,9 @@ extension TraktManager {
      📄 Pagination Optional
      ✨ Extended Info
      */
+    
     @discardableResult
-    public func getWatchlist(watchType: WatchedType, pagination: Pagination? = nil, extended: [ExtendedType] = [.Min], completion: @escaping WatchlistCompletionHandler) -> URLSessionDataTaskProtocol? {
+    public func getWatchlist(watchType: WatchedType, pagination: Pagination? = nil, sort: String? = nil, extended: [ExtendedType] = [.Min], completion: @escaping WatchlistCompletionHandler) -> URLSessionDataTaskProtocol? {
         
         var query: [String: String] = ["extended": extended.queryString()]
         
@@ -384,7 +385,7 @@ extension TraktManager {
             }
         }
         
-        guard let request = mutableRequest(forPath: "sync/watchlist/\(watchType.rawValue)",
+        guard let request = mutableRequest(forPath: "sync/watchlist/\(watchType.rawValue)/\(sort ?? "")",
                                            withQuery: query,
                                            isAuthorized: true,
                                            withHTTPMethod: .GET) else { return nil }
