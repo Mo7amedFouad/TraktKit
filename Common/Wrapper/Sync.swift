@@ -442,10 +442,11 @@ extension TraktManager {
      */
     @discardableResult
     public func getFavorites(watchType: WatchedType? = nil, sort: String?, completion: @escaping WatchlistCompletionHandler) -> URLSessionDataTaskProtocol? {
-        guard let request = mutableRequest(forPath: "sync/favorites/\(watchType?.rawValue ?? "")/\(sort ?? "")",
+        guard let request = mutableRequest(forPath: "sync/favorites/\(watchType?.rawValue ?? "")/",
                                            withQuery: [:],
                                            isAuthorized: true,
-                                           withHTTPMethod: .GET) else { return nil }
+                                           withHTTPMethod: .GET,
+                                           headers: ["X-Sort-By": sort ?? ""]) else { return nil }
         return performRequest(request: request, completion: completion)
     }
     
